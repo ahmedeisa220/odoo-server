@@ -3,7 +3,27 @@ services:
     name: odoo-server
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python3 odoo-bin -c odoo.conf -d odoo_temp_init
+    startCommand: >
+      python3 odoo-bin -c odoo.conf -d odoo_temp_init --init=base --without-demo=all &&
+      python3 -c "
+import odoo
+odoo.tools.config['config_file'] = 'odoo.conf'
+odoo.tools.config.parse_config()
+db = 'odoo_temp_init'
+with odoo.api.Environment.manage():
+    cr = odoo.sql_db.db_connect(db).cursor()
+    env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
+    if not env['res.users'].search([('login','=','admin')]):
+        env['res.users'].create({
+            'name': 'Administrator',
+            'login': 'admin',
+            'password': 'aYBsKx_Lfdw3Wz9r',
+            'email': 'admin@example.com',
+            'groups_id': [(6, 0, [env.ref('base.group_user').id, env.ref('base.group_system').id])]
+        })
+    cr.close()
+" &&
+      python3 odoo-bin -c odoo.conf
     envVars:
       - key: PYTHON_VERSION
         value: 3.10
