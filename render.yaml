@@ -3,7 +3,7 @@ services:
     name: odoo-server
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python3 odoo-bin -c odoo.conf
+    startCommand: python3 odoo-bin -c odoo.conf -i base --without-demo=all
     envVars:
       - key: PYTHON_VERSION
         value: 3.10
