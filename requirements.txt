@@ -36,3 +36,4 @@ zxcvbn==4.4.28
 polib
 decorator==5.1.1
 rjsmin==1.2.1
+pyOpenSSL==23.3.0
